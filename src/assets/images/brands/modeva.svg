@@ -1,0 +1,9 @@
+<svg width="240" height="120" viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="240" height="120" rx="24" fill="transparent"/>
+  <path d="M60 84L92 36L124 84" stroke="#0F172A" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M92 36V84" stroke="#D4AF37" stroke-width="7" stroke-linecap="round"/>
+  <path d="M144 36H190" stroke="#0F172A" stroke-width="7" stroke-linecap="round"/>
+  <path d="M144 60H190" stroke="#D4AF37" stroke-width="7" stroke-linecap="round"/>
+  <path d="M144 84H190" stroke="#0F172A" stroke-width="7" stroke-linecap="round"/>
+  <text x="120" y="108" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="2" fill="#0F172A">MODEVA</text>
+</svg>

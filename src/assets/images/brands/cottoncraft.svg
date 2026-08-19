@@ -1,0 +1,9 @@
+<svg width="240" height="120" viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="240" height="120" rx="24" fill="transparent"/>
+  <circle cx="78" cy="60" r="24" stroke="#0F172A" stroke-width="6"/>
+  <path d="M78 36V84" stroke="#D4AF37" stroke-width="6" stroke-linecap="round"/>
+  <path d="M54 60H102" stroke="#D4AF37" stroke-width="6" stroke-linecap="round"/>
+  <path d="M132 36C146 44 156 56 156 60C156 64 146 76 132 84" stroke="#0F172A" stroke-width="7" stroke-linecap="round"/>
+  <path d="M156 36C170 44 180 56 180 60C180 64 170 76 156 84" stroke="#D4AF37" stroke-width="7" stroke-linecap="round"/>
+  <text x="120" y="108" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="2" fill="#0F172A">COTTONCRAFT</text>
+</svg>

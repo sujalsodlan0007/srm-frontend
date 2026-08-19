@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f1ea}
+a{color:#8a6a3c;text-decoration:none}
+a:hover{color:#6b5029}
+input,textarea{font-family:-apple-system,Helvetica,Arial,sans-serif}
+input::placeholder,textarea::placeholder{color:#a39a8c}
+</style>
+</helmet>
+
+<div style="font-family:-apple-system,Helvetica,Arial,sans-serif;color:#1c1a17;background:#f5f1ea;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column">
+
+<sc-if value="{{cartDrawerOpen}}" hint-placeholder-val="{{false}}">
+<div style="position:fixed;inset:0;background:rgba(20,18,15,.5);z-index:200" onClick="{{closeCart}}"></div>
+<div style="position:fixed;top:0;right:0;bottom:0;width:420px;max-width:92vw;background:#f5f1ea;z-index:201;display:flex;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.18)">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:28px 32px;border-bottom:1px solid #e3ddd0">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:.08em">YOUR BAG ({{cartCount}})</div>
+    <div onClick="{{closeCart}}" style="cursor:pointer;font-size:22px;line-height:1;color:#5a544b">×</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:24px 32px">
+    <sc-if value="{{hasCartItems}}" hint-placeholder-val="{{false}}">
+      <sc-for list="{{cartItems}}" as="line" hint-placeholder-count="2">
+        <div style="display:flex;gap:16px;padding:18px 0;border-bottom:1px solid #e3ddd0">
+          <div style="width:76px;height:96px;flex:none;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 8px,#e8e4dc 8px,#e8e4dc 16px)"></div>
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:600;margin-bottom:4px">{{line.name}}</div>
+            <div style="font-size:13px;color:#8a8172;margin-bottom:10px">Size {{line.size}}</div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div onClick="{{line.onDec}}" style="width:26px;height:26px;border:1px solid #1c1a17;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px">−</div>
+              <div style="font-size:14px">{{line.qty}}</div>
+              <div onClick="{{line.onInc}}" style="width:26px;height:26px;border:1px solid #1c1a17;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px">+</div>
+              <div onClick="{{line.onRemove}}" style="margin-left:auto;font-size:12px;color:#8a8172;cursor:pointer;letter-spacing:.04em">REMOVE</div>
+            </div>
+          </div>
+          <div style="font-size:14px;font-weight:600">${{line.lineTotal}}</div>
+        </div>
+      </sc-for>
+    </sc-if>
+    <sc-if value="{{hasCartItems}}" hint-placeholder-val="{{true}}">
+      <div style="display:none"></div>
+    </sc-if>
+  </div>
+  <div style="padding:28px 32px;border-top:1px solid #e3ddd0">
+    <div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:20px"><span>Subtotal</span><span style="font-weight:600">${{cartSubtotal}}</span></div>
+    <div onClick="{{goCheckout}}" style="background:#1c1a17;color:#f5f1ea;text-align:center;padding:16px;font-size:14px;letter-spacing:.06em;cursor:pointer;margin-bottom:12px">CHECKOUT</div>
+    <div onClick="{{goCart}}" style="text-align:center;font-size:13px;color:#5a544b;cursor:pointer;letter-spacing:.03em">View full cart →</div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{notHome}}" hint-placeholder-val="{{true}}">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:26px 56px;background:#f5f1ea;border-bottom:1px solid #e3ddd0;position:sticky;top:0;z-index:50">
+  <div onClick="{{goHome}}" style="font-family:'Cormorant Garamond',serif;font-size:26px;letter-spacing:.14em;cursor:pointer;font-weight:500">SUJAL</div>
+  <div style="display:flex;gap:34px;font-size:14px;letter-spacing:.02em">
+    <sc-for list="{{navItems}}" as="item" hint-placeholder-count="5">
+      <div onClick="{{item.onClick}}" style="cursor:pointer;padding-bottom:5px;border-bottom:2px solid {{item.underline}}">{{item.label}}</div>
+    </sc-for>
+  </div>
+  <div onClick="{{openCart}}" style="cursor:pointer;font-size:14px;letter-spacing:.02em;white-space:nowrap;flex-shrink:0">CART ({{cartCount}})</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isHome}}" hint-placeholder-val="{{true}}">
+<div>
+  <div style="position:relative;width:100%;height:92vh;min-height:640px;overflow:hidden">
+    <img src="uploads/marco-j-haenssgen-sE0udIZcgGM-unsplash.jpg.jpeg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.55) 0%,rgba(20,17,14,.12) 38%,rgba(20,17,14,.78) 100%)"></div>
+    <div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:34px 56px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:30px;letter-spacing:.14em;color:#f5f1ea;font-weight:500">SUJAL</div>
+      <div style="display:flex;gap:36px;font-size:14px;color:#f5f1ea">
+        <sc-for list="{{navItemsLight}}" as="item" hint-placeholder-count="5">
+          <div onClick="{{item.onClick}}" style="cursor:pointer;padding-bottom:5px;border-bottom:2px solid {{item.underline}}">{{item.label}}</div>
+        </sc-for>
+      </div>
+      <div onClick="{{openCart}}" style="cursor:pointer;font-size:14px;color:#f5f1ea;white-space:nowrap;flex-shrink:0">CART ({{cartCount}})</div>
+    </div>
+    <div style="position:absolute;left:56px;right:56px;bottom:80px">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:#c9a876;letter-spacing:.04em;margin-bottom:16px">Womenswear</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:min(9vw,92px);line-height:1.03;color:#f9f6f1;font-weight:500;max-width:900px">Confidence,<br>Cut To Fit.</div>
+      <div style="display:flex;gap:16px;margin-top:34px">
+        <div onClick="{{goShop}}" style="background:#f5f1ea;color:#1c1a17;padding:16px 32px;font-size:14px;letter-spacing:.06em;cursor:pointer;white-space:nowrap;width:fit-content">SHOP THE COLLECTION</div>
+        <div onClick="{{goGallery}}" style="border:1px solid rgba(245,241,234,.6);color:#f5f1ea;padding:16px 32px;font-size:14px;letter-spacing:.06em;cursor:pointer;white-space:nowrap;width:fit-content">VIEW LOOKBOOK</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);padding:96px 56px;gap:56px;max-width:1280px;margin:0 auto">
+    <div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;margin-bottom:12px">Ethically Made</div><div style="font-size:15px;line-height:1.7;color:#5a544b">Every piece is cut and finished in facilities we visit, audit and know by name.</div></div>
+    <div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;margin-bottom:12px">Tailored Fit</div><div style="font-size:15px;line-height:1.7;color:#5a544b">Patterns built around real bodies, graded with care across every size.</div></div>
+    <div><div style="font-family:'Cormorant Garamond',serif;font-size:28px;margin-bottom:12px">Small-Batch Craft</div><div style="font-size:15px;line-height:1.7;color:#5a544b">Limited runs, considered fabrics, nothing rushed off the line.</div></div>
+  </div>
+
+  <div style="padding:0 56px 100px;max-width:1280px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:40px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:36px">The Collection</div>
+      <div onClick="{{goShop}}" style="font-size:13px;letter-spacing:.04em;cursor:pointer;color:#8a6a3c">SHOP ALL →</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:28px">
+      <sc-for list="{{featuredProducts}}" as="p" hint-placeholder-count="4">
+        <div>
+          <div onClick="{{p.onOpen}}" style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 10px,#e8e4dc 10px,#e8e4dc 20px);cursor:pointer;margin-bottom:14px"></div>
+          <div onClick="{{p.onOpen}}" style="font-size:15px;font-weight:600;cursor:pointer;margin-bottom:4px">{{p.name}}</div>
+          <div style="font-size:14px;color:#5a544b;margin-bottom:10px">${{p.price}}</div>
+          <div onClick="{{p.onQuickAdd}}" style="font-size:12px;letter-spacing:.04em;border:1px solid #1c1a17;padding:9px;text-align:center;cursor:pointer">ADD TO CART</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr">
+    <div style="aspect-ratio:1/0.72;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 10px,#e8e4dc 10px,#e8e4dc 20px);display:flex;align-items:center;justify-content:center;text-align:center"><span style="font:11px ui-monospace,Menlo,monospace;color:#8a8172;padding:0 20px">PRODUCT SHOT — three-quarter, studio light</span></div>
+    <div style="padding:90px 70px;display:flex;flex-direction:column;justify-content:center;background:#1c1a17">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#c9a876;font-size:16px;margin-bottom:14px">The Craft</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:38px;color:#f5f1ea;line-height:1.15;margin-bottom:22px">Seams that hold their shape, season after season.</div>
+      <div style="font-size:15px;line-height:1.8;color:#c9c4ba;max-width:420px">We work fabric-first — testing drape, recovery and hand-feel before a single pattern is cut.</div>
+    </div>
+  </div>
+
+  <div style="position:relative;height:460px">
+    <img src="uploads/collab-media-upKXvfgKABY-unsplash%20-%20Copy.jpg.jpeg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(28,26,23,.88) 32%,rgba(28,26,23,.15) 100%)"></div>
+    <div style="position:absolute;left:56px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;max-width:460px">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#c9a876;font-size:16px;margin-bottom:14px">Behind Sujal</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:38px;color:#f9f6f1;line-height:1.2;margin-bottom:22px">From fabric to finish, we know the whole line.</div>
+      <div onClick="{{goIndustry}}" style="border:1px solid rgba(245,241,234,.5);color:#f5f1ea;padding:14px 28px;font-size:13px;letter-spacing:.06em;width:fit-content;white-space:nowrap;cursor:pointer">SEE OUR PROCESS</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isShop}}" hint-placeholder-val="{{false}}">
+<div style="max-width:1280px;margin:0 auto;padding:70px 56px 110px">
+  <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:#8a6a3c;margin-bottom:14px">The Collection</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:52px;margin-bottom:36px">Shop All</div>
+  <div style="display:flex;gap:28px;border-bottom:1px solid #e3ddd0;margin-bottom:44px;padding-bottom:16px">
+    <sc-for list="{{categoryTabs}}" as="c" hint-placeholder-count="5">
+      <div onClick="{{c.onClick}}" style="font-size:14px;letter-spacing:.03em;cursor:pointer;color:{{c.color}}">{{c.label}}</div>
+    </sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:32px">
+    <sc-for list="{{filteredProducts}}" as="p" hint-placeholder-count="8">
+      <div>
+        <div onClick="{{p.onOpen}}" style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 10px,#e8e4dc 10px,#e8e4dc 20px);cursor:pointer;margin-bottom:14px"></div>
+        <div style="font-size:12px;color:#8a8172;letter-spacing:.03em;margin-bottom:4px">{{p.category}}</div>
+        <div onClick="{{p.onOpen}}" style="font-size:15px;font-weight:600;cursor:pointer;margin-bottom:4px">{{p.name}}</div>
+        <div style="font-size:14px;color:#5a544b;margin-bottom:10px">${{p.price}}</div>
+        <div onClick="{{p.onQuickAdd}}" style="font-size:12px;letter-spacing:.04em;border:1px solid #1c1a17;padding:9px;text-align:center;cursor:pointer">ADD TO CART</div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isProduct}}" hint-placeholder-val="{{false}}">
+<div style="max-width:1280px;margin:0 auto;padding:56px 56px 110px">
+  <div onClick="{{goShop}}" style="font-size:13px;color:#8a6a3c;cursor:pointer;margin-bottom:40px;letter-spacing:.03em">← BACK TO SHOP</div>
+  <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:70px">
+    <div>
+      <div style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 12px,#e8e4dc 12px,#e8e4dc 24px);margin-bottom:16px"></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+        <div style="aspect-ratio:1;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 8px,#e8e4dc 8px,#e8e4dc 16px)"></div>
+        <div style="aspect-ratio:1;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 8px,#e8e4dc 8px,#e8e4dc 16px)"></div>
+        <div style="aspect-ratio:1;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 8px,#e8e4dc 8px,#e8e4dc 16px)"></div>
+        <div style="aspect-ratio:1;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 8px,#e8e4dc 8px,#e8e4dc 16px)"></div>
+      </div>
+    </div>
+    <div style="padding-top:12px">
+      <div style="font-size:13px;color:#8a8172;letter-spacing:.03em;margin-bottom:10px">{{selectedProduct.category}}</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:44px;line-height:1.1;margin-bottom:16px">{{selectedProduct.name}}</div>
+      <div style="font-size:20px;margin-bottom:26px">${{selectedProduct.price}}</div>
+      <div style="font-size:15px;line-height:1.8;color:#5a544b;margin-bottom:34px;max-width:440px">{{selectedProduct.blurb}}</div>
+
+      <div style="font-size:13px;letter-spacing:.04em;margin-bottom:12px">SIZE</div>
+      <div style="display:flex;gap:10px;margin-bottom:34px">
+        <sc-for list="{{sizePills}}" as="sz" hint-placeholder-count="5">
+          <div onClick="{{sz.onClick}}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid {{sz.borderColor}};background:{{sz.bg}};color:{{sz.color}};cursor:pointer;font-size:14px">{{sz.label}}</div>
+        </sc-for>
+      </div>
+
+      <div style="font-size:13px;letter-spacing:.04em;margin-bottom:12px">QUANTITY</div>
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:34px">
+        <div onClick="{{decQty}}" style="width:36px;height:36px;border:1px solid #1c1a17;display:flex;align-items:center;justify-content:center;cursor:pointer">−</div>
+        <div style="font-size:15px;min-width:16px;text-align:center">{{qty}}</div>
+        <div onClick="{{incQty}}" style="width:36px;height:36px;border:1px solid #1c1a17;display:flex;align-items:center;justify-content:center;cursor:pointer">+</div>
+      </div>
+
+      <div onClick="{{addSelectedToCart}}" style="background:#1c1a17;color:#f5f1ea;text-align:center;padding:18px;font-size:14px;letter-spacing:.06em;cursor:pointer;width:fit-content;padding-left:48px;padding-right:48px">ADD TO CART</div>
+    </div>
+  </div>
+
+  <div style="margin-top:120px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:30px;margin-bottom:32px">You May Also Like</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px">
+      <sc-for list="{{relatedProducts}}" as="p" hint-placeholder-count="3">
+        <div>
+          <div onClick="{{p.onOpen}}" style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 10px,#e8e4dc 10px,#e8e4dc 20px);cursor:pointer;margin-bottom:14px"></div>
+          <div onClick="{{p.onOpen}}" style="font-size:15px;font-weight:600;cursor:pointer;margin-bottom:4px">{{p.name}}</div>
+          <div style="font-size:14px;color:#5a544b">${{p.price}}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isGallery}}" hint-placeholder-val="{{false}}">
+<div style="max-width:1280px;margin:0 auto;padding:70px 56px 110px">
+  <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:#8a6a3c;margin-bottom:14px">Lookbook</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:52px;margin-bottom:50px;max-width:700px">Seen In Sujal.</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+    <div style="grid-row:span 2;aspect-ratio:3/4.6;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 12px,#e8e4dc 12px,#e8e4dc 24px);display:flex;align-items:center;justify-content:center;text-align:center"><span style="font:11px ui-monospace,Menlo,monospace;color:#8a8172;padding:0 16px">LOOKBOOK — full length, studio</span></div>
+    <div style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 12px,#e8e4dc 12px,#e8e4dc 24px);display:flex;align-items:center;justify-content:center;text-align:center"><span style="font:11px ui-monospace,Menlo,monospace;color:#8a8172;padding:0 16px">CAMPAIGN — outdoor</span></div>
+    <div style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 12px,#e8e4dc 12px,#e8e4dc 24px);display:flex;align-items:center;justify-content:center;text-align:center"><span style="font:11px ui-monospace,Menlo,monospace;color:#8a8172;padding:0 16px">DETAIL — texture, close crop</span></div>
+    <div style="aspect-ratio:1/1.5;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 12px,#e8e4dc 12px,#e8e4dc 24px);display:flex;align-items:center;justify-content:center;text-align:center"><span style="font:11px ui-monospace,Menlo,monospace;color:#8a8172;padding:0 16px">LOOKBOOK — movement, editorial</span></div>
+    <div style="aspect-ratio:4/3;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 12px,#e8e4dc 12px,#e8e4dc 24px);display:flex;align-items:center;justify-content:center;text-align:center"><span style="font:11px ui-monospace,Menlo,monospace;color:#8a8172;padding:0 16px">STILL LIFE — accessories</span></div>
+    <div style="grid-column:span 2;aspect-ratio:16/9;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 12px,#e8e4dc 12px,#e8e4dc 24px);display:flex;align-items:center;justify-content:center;text-align:center"><span style="font:11px ui-monospace,Menlo,monospace;color:#8a8172;padding:0 16px">CAMPAIGN — group, wide</span></div>
+    <div style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 12px,#e8e4dc 12px,#e8e4dc 24px);display:flex;align-items:center;justify-content:center;text-align:center"><span style="font:11px ui-monospace,Menlo,monospace;color:#8a8172;padding:0 16px">LOOKBOOK — full length, studio</span></div>
+    <div style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 12px,#e8e4dc 12px,#e8e4dc 24px);display:flex;align-items:center;justify-content:center;text-align:center"><span style="font:11px ui-monospace,Menlo,monospace;color:#8a8172;padding:0 16px">DETAIL — fabric drape</span></div>
+    <div style="aspect-ratio:3/4;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 12px,#e8e4dc 12px,#e8e4dc 24px);display:flex;align-items:center;justify-content:center;text-align:center"><span style="font:11px ui-monospace,Menlo,monospace;color:#8a8172;padding:0 16px">CAMPAIGN — portrait</span></div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isIndustry}}" hint-placeholder-val="{{false}}">
+<div>
+  <div style="position:relative;height:70vh;min-height:500px;overflow:hidden">
+    <img src="uploads/collab-media-upKXvfgKABY-unsplash%20-%20Copy.jpg.jpeg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.35) 0%,rgba(20,17,14,.75) 100%)"></div>
+    <div style="position:absolute;left:56px;right:56px;bottom:64px;max-width:820px">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#c9a876;font-size:17px;margin-bottom:16px">Industry & Supply Chain</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:56px;color:#f9f6f1;line-height:1.1">From Fabric To Finish.</div>
+    </div>
+  </div>
+
+  <div style="max-width:1280px;margin:0 auto;padding:90px 56px 40px">
+    <div style="font-size:17px;line-height:1.85;color:#3a3630;max-width:760px">Sujal garments move through a single, known line — cutting, sewing, finishing and quality control handled by partners we've visited and stayed close to. We don't outsource blind; we build relationships with the people making the clothes.</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;max-width:1280px;margin:60px auto;gap:0">
+    <img src="uploads/arawark-chen-HIrP05jnXNs-unsplash.jpg.jpeg" style="width:100%;height:100%;object-fit:cover;aspect-ratio:4/5">
+    <div style="padding:70px;display:flex;flex-direction:column;justify-content:center;background:#1c1a17">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#c9a876;font-size:16px;margin-bottom:14px">Cut & Sew</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:34px;color:#f5f1ea;line-height:1.2;margin-bottom:20px">Precision at the pattern table.</div>
+      <div style="font-size:15px;line-height:1.8;color:#c9c4ba">Every garment starts as a cut pattern, checked by hand before it reaches a single machine.</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;max-width:1280px;margin:0 auto 60px;gap:0">
+    <div style="padding:70px;display:flex;flex-direction:column;justify-content:center;order:1">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#8a6a3c;font-size:16px;margin-bottom:14px">Quality Control</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:34px;line-height:1.2;margin-bottom:20px">Checked, folded, checked again.</div>
+      <div style="font-size:15px;line-height:1.8;color:#5a544b">Finished pieces are inspected and folded by the same team that stitched them — accountability stays in the room.</div>
+    </div>
+    <img src="uploads/luba-glazunova-hl8EFKDlbKw-unsplash.jpg.jpeg" style="width:100%;height:100%;object-fit:cover;aspect-ratio:4/5;order:2">
+  </div>
+
+  <div style="max-width:1280px;margin:0 auto 100px;padding:0 56px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:28px;margin-bottom:30px">On The Line</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+      <img src="uploads/remy-gieling-KP6XQIEjjPA-unsplash.jpg.jpeg" style="width:100%;aspect-ratio:3/4;object-fit:cover">
+      <img src="uploads/francois-le-nguyen-pouTfHUG430-unsplash.jpg.jpeg" style="width:100%;aspect-ratio:3/4;object-fit:cover">
+      <img src="uploads/bozhin-karaivanov-vwUmBoT5_eA-unsplash.jpg.jpeg" style="width:100%;aspect-ratio:3/4;object-fit:cover">
+    </div>
+  </div>
+
+  <div style="position:relative;height:520px">
+    <img src="uploads/equalstock-kuyumG6hKWk-unsplash.jpg.jpeg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,18,15,.88) 32%,rgba(20,18,15,.15) 100%)"></div>
+    <div style="position:absolute;left:56px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;max-width:480px">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#c9a876;font-size:16px;margin-bottom:14px">Materials & Sourcing</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:36px;color:#f9f6f1;line-height:1.2;margin-bottom:24px">Fabric chosen for how it lasts, not just how it photographs.</div>
+      <div onClick="{{goContact}}" style="border:1px solid rgba(245,241,234,.5);color:#f5f1ea;padding:14px 28px;font-size:13px;letter-spacing:.06em;width:fit-content;white-space:nowrap;cursor:pointer">TALK TO US</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isAbout}}" hint-placeholder-val="{{false}}">
+<div>
+  <div style="position:relative;height:64vh;min-height:460px;overflow:hidden">
+    <img src="uploads/luba-glazunova-hl8EFKDlbKw-unsplash.jpg.jpeg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,17,14,.3) 0%,rgba(20,17,14,.72) 100%)"></div>
+    <div style="position:absolute;left:56px;right:56px;bottom:60px;max-width:760px">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#c9a876;font-size:17px;margin-bottom:16px">Our Story</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:52px;color:#f9f6f1;line-height:1.1">Made By Hand, Owned By Us.</div>
+    </div>
+  </div>
+
+  <div style="max-width:900px;margin:0 auto;padding:100px 56px 80px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1.4;margin-bottom:28px">Sujal began with a simple frustration: clothes that looked considered but fell apart in a season, made somewhere nobody could name.</div>
+    <div style="font-size:16px;line-height:1.9;color:#5a544b">So we built the opposite — a small womenswear label that stays close to the line that makes it. We choose fabric first, fit second, trend never. Every collection is small enough that we can stand behind each piece in it.</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);max-width:1280px;margin:0 auto;padding:0 56px 100px;gap:56px">
+    <div><div style="font-family:'Cormorant Garamond',serif;font-size:26px;margin-bottom:12px">Women First</div><div style="font-size:15px;line-height:1.7;color:#5a544b">Designed around how women actually move, sit and dress in a real day.</div></div>
+    <div><div style="font-family:'Cormorant Garamond',serif;font-size:26px;margin-bottom:12px">Full Transparency</div><div style="font-size:15px;line-height:1.7;color:#5a544b">We name our makers and open our process — see the Industry page.</div></div>
+    <div><div style="font-family:'Cormorant Garamond',serif;font-size:26px;margin-bottom:12px">Considered Pace</div><div style="font-size:15px;line-height:1.7;color:#5a544b">Fewer releases, held to a higher standard, meant to be kept.</div></div>
+  </div>
+
+  <div style="position:relative;height:480px">
+    <img src="uploads/AdobeStock_91342287.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,17,14,.8) 0%,rgba(20,17,14,.05) 60%)"></div>
+    <div style="position:absolute;left:56px;right:56px;bottom:48px;display:flex;justify-content:space-between;align-items:flex-end">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#f9f6f1;max-width:560px;line-height:1.3">Every stitch is placed by someone we've met in person.</div>
+      <div onClick="{{goIndustry}}" style="border:1px solid rgba(245,241,234,.5);color:#f5f1ea;padding:14px 28px;font-size:13px;letter-spacing:.06em;white-space:nowrap;cursor:pointer">SEE HOW IT'S MADE</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isContact}}" hint-placeholder-val="{{false}}">
+<div style="max-width:1000px;margin:0 auto;padding:90px 56px 120px;display:grid;grid-template-columns:1.2fr .8fr;gap:80px">
+  <div>
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:#8a6a3c;margin-bottom:14px">Contact</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:44px;margin-bottom:26px">Get In Touch</div>
+    <sc-if value="{{contactSubmitted}}" hint-placeholder-val="{{false}}">
+      <div style="font-size:16px;line-height:1.8;color:#3a3630;padding:28px 0">Thank you — we've received your message and will reply soon.</div>
+    </sc-if>
+    <sc-if value="{{contactSubmitted}}" hint-placeholder-val="{{true}}">
+      <form onSubmit="{{submitContact}}" style="display:flex;flex-direction:column;gap:18px;max-width:440px">
+        <input type="text" required="{{true}}" placeholder="Name" value="{{contactName}}" onChange="{{setContactName}}" style="padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px;color:#1c1a17"></input>
+        <input type="email" required="{{true}}" placeholder="Email" value="{{contactEmail}}" onChange="{{setContactEmail}}" style="padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px;color:#1c1a17"></input>
+        <textarea required="{{true}}" placeholder="Message" rows="5" value="{{contactMessage}}" onChange="{{setContactMessage}}" style="padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px;color:#1c1a17;resize:vertical"></textarea>
+        <button type="submit" style="background:#1c1a17;color:#f5f1ea;border:none;padding:16px;font-size:14px;letter-spacing:.06em;cursor:pointer;width:fit-content;padding-left:36px;padding-right:36px">SEND MESSAGE</button>
+      </form>
+    </sc-if>
+  </div>
+  <div>
+    <div style="font-size:13px;letter-spacing:.04em;color:#8a8172;margin-bottom:8px">EMAIL</div>
+    <div style="font-size:16px;margin-bottom:32px">hello@sujal.com</div>
+    <div style="font-size:13px;letter-spacing:.04em;color:#8a8172;margin-bottom:8px">STUDIO</div>
+    <div style="font-size:16px;color:#5a544b;margin-bottom:32px">Address on request</div>
+    <div style="font-size:13px;letter-spacing:.04em;color:#8a8172;margin-bottom:8px">FOR PARTNERS & SOURCING</div>
+    <div style="font-size:15px;line-height:1.7;color:#5a544b">Reach out via the form and mention "Industry" — we'll route it to the right team.</div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isCart}}" hint-placeholder-val="{{false}}">
+<div style="max-width:1100px;margin:0 auto;padding:80px 56px 120px">
+  <div style="font-family:'Cormorant Garamond',serif;font-size:44px;margin-bottom:44px">Your Bag</div>
+  <sc-if value="{{hasCartItems}}" hint-placeholder-val="{{false}}">
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:70px">
+      <div>
+        <sc-for list="{{cartItems}}" as="line" hint-placeholder-count="2">
+          <div style="display:flex;gap:20px;padding:24px 0;border-bottom:1px solid #e3ddd0">
+            <div style="width:96px;height:120px;flex:none;background:repeating-linear-gradient(135deg,#dcd7cd,#dcd7cd 8px,#e8e4dc 8px,#e8e4dc 16px)"></div>
+            <div style="flex:1">
+              <div style="font-size:16px;font-weight:600;margin-bottom:6px">{{line.name}}</div>
+              <div style="font-size:13px;color:#8a8172;margin-bottom:14px">Size {{line.size}}</div>
+              <div style="display:flex;align-items:center;gap:14px">
+                <div onClick="{{line.onDec}}" style="width:30px;height:30px;border:1px solid #1c1a17;display:flex;align-items:center;justify-content:center;cursor:pointer">−</div>
+                <div style="font-size:14px">{{line.qty}}</div>
+                <div onClick="{{line.onInc}}" style="width:30px;height:30px;border:1px solid #1c1a17;display:flex;align-items:center;justify-content:center;cursor:pointer">+</div>
+                <div onClick="{{line.onRemove}}" style="margin-left:auto;font-size:12px;color:#8a8172;cursor:pointer;letter-spacing:.04em">REMOVE</div>
+              </div>
+            </div>
+            <div style="font-size:15px;font-weight:600">${{line.lineTotal}}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:#efeae0;padding:36px;height:fit-content">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:24px">Order Summary</div>
+        <div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:12px;color:#5a544b"><span>Subtotal</span><span>${{cartSubtotal}}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:15px;margin-bottom:20px;color:#5a544b"><span>Shipping</span><span>Calculated at checkout</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:17px;font-weight:600;padding-top:16px;border-top:1px solid #d8d2c4;margin-bottom:28px"><span>Total</span><span>${{cartSubtotal}}</span></div>
+        <div onClick="{{goCheckout}}" style="background:#1c1a17;color:#f5f1ea;text-align:center;padding:16px;font-size:14px;letter-spacing:.06em;cursor:pointer">PROCEED TO CHECKOUT</div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{hasCartItems}}" hint-placeholder-val="{{true}}">
+    <div style="padding:60px 0;text-align:center">
+      <div style="font-size:16px;color:#5a544b;margin-bottom:24px">Your bag is empty.</div>
+      <div onClick="{{goShop}}" style="background:#1c1a17;color:#f5f1ea;padding:16px 34px;font-size:14px;letter-spacing:.06em;cursor:pointer;display:inline-block">CONTINUE SHOPPING</div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{isCheckout}}" hint-placeholder-val="{{false}}">
+<div style="max-width:1100px;margin:0 auto;padding:80px 56px 120px">
+  <sc-if value="{{orderPlaced}}" hint-placeholder-val="{{false}}">
+    <div style="text-align:center;padding:80px 0;max-width:520px;margin:0 auto">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:40px;margin-bottom:20px">Order Confirmed</div>
+      <div style="font-size:16px;line-height:1.8;color:#5a544b;margin-bottom:12px">Thank you — your order is confirmed. A receipt has been sent to your email.</div>
+      <div style="font-size:13px;letter-spacing:.04em;color:#8a8172;margin-bottom:36px">ORDER #SJ-10482</div>
+      <div onClick="{{startNewOrder}}" style="background:#1c1a17;color:#f5f1ea;padding:16px 34px;font-size:14px;letter-spacing:.06em;cursor:pointer;display:inline-block">CONTINUE SHOPPING</div>
+    </div>
+  </sc-if>
+  <sc-if value="{{orderPlaced}}" hint-placeholder-val="{{true}}">
+    <div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:44px;margin-bottom:44px">Checkout</div>
+      <form onSubmit="{{placeOrder}}" style="display:grid;grid-template-columns:1.4fr 1fr;gap:70px">
+        <div style="display:flex;flex-direction:column;gap:32px">
+          <div>
+            <div style="font-size:13px;letter-spacing:.04em;color:#8a8172;margin-bottom:14px">CONTACT</div>
+            <input type="email" required="{{true}}" placeholder="Email" style="width:100%;box-sizing:border-box;padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px"></input>
+          </div>
+          <div>
+            <div style="font-size:13px;letter-spacing:.04em;color:#8a8172;margin-bottom:14px">SHIPPING ADDRESS</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <input type="text" required="{{true}}" placeholder="First name" style="padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px"></input>
+              <input type="text" required="{{true}}" placeholder="Last name" style="padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px"></input>
+              <input type="text" required="{{true}}" placeholder="Address" style="grid-column:span 2;padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px"></input>
+              <input type="text" required="{{true}}" placeholder="City" style="padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px"></input>
+              <input type="text" required="{{true}}" placeholder="ZIP / Postal" style="padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px"></input>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:13px;letter-spacing:.04em;color:#8a8172;margin-bottom:14px">PAYMENT</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <input type="text" required="{{true}}" placeholder="Card number" style="grid-column:span 2;padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px"></input>
+              <input type="text" required="{{true}}" placeholder="MM / YY" style="padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px"></input>
+              <input type="text" required="{{true}}" placeholder="CVC" style="padding:14px 16px;border:1px solid #d8d2c4;background:#fff;font-size:15px"></input>
+            </div>
+          </div>
+          <button type="submit" style="background:#1c1a17;color:#f5f1ea;border:none;padding:18px;font-size:14px;letter-spacing:.06em;cursor:pointer">PLACE ORDER — ${{cartSubtotal}}</button>
+        </div>
+        <div style="background:#efeae0;padding:36px;height:fit-content">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:24px;margin-bottom:24px">Order Summary</div>
+          <sc-for list="{{cartItems}}" as="line" hint-placeholder-count="2">
+            <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:14px;color:#3a3630"><span>{{line.name}} × {{line.qty}}</span><span>${{line.lineTotal}}</span></div>
+          </sc-for>
+          <div style="display:flex;justify-content:space-between;font-size:17px;font-weight:600;padding-top:16px;border-top:1px solid #d8d2c4;margin-top:12px"><span>Total</span><span>${{cartSubtotal}}</span></div>
+        </div>
+      </form>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<div style="flex:1"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:44px 56px;background:#1c1a17;color:#c9c4ba;font-size:13px">
+  <div style="font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:.14em;color:#f5f1ea">SUJAL</div>
+  <div style="display:flex;gap:28px">
+    <span onClick="{{goShop}}" style="cursor:pointer">Shop</span><span onClick="{{goGallery}}" style="cursor:pointer">Gallery</span><span onClick="{{goIndustry}}" style="cursor:pointer">Industry</span><span onClick="{{goAbout}}" style="cursor:pointer">About</span><span onClick="{{goContact}}" style="cursor:pointer">Contact</span>
+  </div>
+  <div>© {{year}} Sujal</div>
+</div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    page: 'home',
+    cartDrawerOpen: false,
+    cart: [],
+    selectedProductId: null,
+    selectedSize: 'M',
+    qty: 1,
+    shopCategory: 'all',
+    contactName: '',
+    contactEmail: '',
+    contactMessage: '',
+    contactSubmitted: false,
+    orderPlaced: false,
+  };
+
+  products = [
+    {id:'p1', name:'Ansel Wrap Dress', category:'Dresses', price:228, blurb:'A fluid wrap dress in a matte crepe that moves with you from desk to dinner.'},
+    {id:'p2', name:'Meridian Blazer', category:'Outerwear', price:312, blurb:'Structured shoulders and a nipped waist, cut from a mid-weight wool blend.'},
+    {id:'p3', name:'Rove Silk Blouse', category:'Tops', price:148, blurb:'A relaxed silk blouse with a soft collar and a covered button placket.'},
+    {id:'p4', name:'Lucia Tailored Trouser', category:'Bottoms', price:186, blurb:'High-rise trousers with a clean front and a fabric built to hold its crease.'},
+    {id:'p5', name:'Sable Midi Skirt', category:'Bottoms', price:164, blurb:'A bias-cut midi skirt in a fluid twill that falls just below the knee.'},
+    {id:'p6', name:'Verity Knit Top', category:'Tops', price:118, blurb:'A fine-gauge knit top with a second-skin fit and a touch of stretch.'},
+    {id:'p7', name:'Marlow Trench', category:'Outerwear', price:398, blurb:'A double-breasted trench in a water-resistant cotton twill.'},
+    {id:'p8', name:'Elin Slip Dress', category:'Dresses', price:198, blurb:'A bias-cut slip dress in a weighted satin that skims rather than clings.'},
+  ];
+
+  sizes = ['XS','S','M','L','XL'];
+  categories = [
+    {key:'all', label:'All'},
+    {key:'Dresses', label:'Dresses'},
+    {key:'Outerwear', label:'Outerwear'},
+    {key:'Tops', label:'Tops'},
+    {key:'Bottoms', label:'Bottoms'},
+  ];
+
+  goTo = (page) => { this.setState({ page }, () => window.scrollTo(0,0)); };
+  openProduct = (id) => { this.setState({ page:'product', selectedProductId:id, selectedSize:'M', qty:1 }, () => window.scrollTo(0,0)); };
+  openCart = () => this.setState({ cartDrawerOpen:true });
+  closeCart = () => this.setState({ cartDrawerOpen:false });
+  setCategory = (key) => this.setState({ shopCategory:key });
+  setSize = (s) => this.setState({ selectedSize:s });
+  incQty = () => this.setState(s => ({ qty: s.qty+1 }));
+  decQty = () => this.setState(s => ({ qty: Math.max(1, s.qty-1) }));
+
+  addToCart = (productId, size, qty) => {
+    this.setState(s => {
+      const cart = [...s.cart];
+      const idx = cart.findIndex(l => l.productId===productId && l.size===size);
+      if (idx>-1) cart[idx] = { ...cart[idx], qty: cart[idx].qty+qty };
+      else cart.push({ productId, size, qty });
+      return { cart, cartDrawerOpen:true };
+    });
+  };
+  quickAdd = (productId) => this.addToCart(productId, 'M', 1);
+  removeLine = (idx) => this.setState(s => ({ cart: s.cart.filter((_,i)=>i!==idx) }));
+  changeLineQty = (idx, delta) => this.setState(s => {
+    const cart = [...s.cart];
+    const newQty = cart[idx].qty + delta;
+    if (newQty<=0) cart.splice(idx,1); else cart[idx] = { ...cart[idx], qty:newQty };
+    return { cart };
+  });
+
+  setContactField = (field, value) => this.setState({ [field]: value });
+  submitContact = (e) => { e.preventDefault(); this.setState({ contactSubmitted:true }); };
+  placeOrder = (e) => { e.preventDefault(); this.setState({ orderPlaced:true, cart:[] }); };
+  startNewOrder = () => this.setState({ orderPlaced:false, page:'shop' }, () => window.scrollTo(0,0));
+
+  renderVals() {
+    const s = this.state;
+    const cartItems = s.cart.map((line,i) => {
+      const product = this.products.find(p=>p.id===line.productId);
+      return { ...line, index:i, name:product.name, price:product.price, lineTotal:(product.price*line.qty).toFixed(2) };
+    });
+    const cartCount = cartItems.reduce((a,l)=>a+l.qty,0);
+    const cartSubtotal = cartItems.reduce((a,l)=>a+parseFloat(l.lineTotal),0).toFixed(2);
+
+    const navDefs = [
+      {key:'shop', label:'Shop'},
+      {key:'gallery', label:'Gallery'},
+      {key:'industry', label:'Industry'},
+      {key:'about', label:'About'},
+      {key:'contact', label:'Contact'},
+    ];
+    const navItems = navDefs.map(n => ({ ...n, onClick:()=>this.goTo(n.key), underline: s.page===n.key ? '#1c1a17' : 'transparent' }));
+    const navItemsLight = navDefs.map(n => ({ ...n, onClick:()=>this.goTo(n.key), underline: s.page===n.key ? '#f5f1ea' : 'transparent' }));
+
+    const filteredProducts = this.products
+      .filter(p => s.shopCategory==='all' || p.category===s.shopCategory)
+      .map(p => ({ ...p, onOpen:()=>this.openProduct(p.id), onQuickAdd:()=>this.quickAdd(p.id) }));
+
+    const categoryTabs = this.categories.map(c => ({ ...c, onClick:()=>this.setCategory(c.key), color: s.shopCategory===c.key ? '#1c1a17' : '#8a8172' }));
+
+    const selectedProduct = this.products.find(p=>p.id===s.selectedProductId) || this.products[0];
+    const relatedProducts = this.products.filter(p=>p.category===selectedProduct.category && p.id!==selectedProduct.id).slice(0,3).map(p=>({ ...p, onOpen:()=>this.openProduct(p.id) }));
+
+    const sizePills = this.sizes.map(sz => ({
+      label: sz,
+      onClick: ()=>this.setSize(sz),
+      borderColor: s.selectedSize===sz ? '#1c1a17' : '#d8d2c4',
+      bg: s.selectedSize===sz ? '#1c1a17' : 'transparent',
+      color: s.selectedSize===sz ? '#f5f1ea' : '#1c1a17',
+    }));
+
+    const featuredProducts = this.products.slice(0,4).map(p=>({ ...p, onOpen:()=>this.openProduct(p.id), onQuickAdd:()=>this.quickAdd(p.id) }));
+
+    const cartItemsWithHandlers = cartItems.map(l => ({ ...l, onRemove:()=>this.removeLine(l.index), onInc:()=>this.changeLineQty(l.index,1), onDec:()=>this.changeLineQty(l.index,-1) }));
+
+    return {
+      page: s.page,
+      isHome: s.page==='home', notHome: s.page!=='home',
+      isShop: s.page==='shop', isGallery: s.page==='gallery', isIndustry: s.page==='industry',
+      isAbout: s.page==='about', isContact: s.page==='contact', isProduct: s.page==='product',
+      isCart: s.page==='cart', isCheckout: s.page==='checkout',
+      cartDrawerOpen: s.cartDrawerOpen,
+      cartCount, cartSubtotal,
+      cartItems: cartItemsWithHandlers,
+      hasCartItems: cartItems.length>0,
+      navItems, navItemsLight,
+      goHome: ()=>this.goTo('home'), goShop: ()=>this.goTo('shop'), goGallery: ()=>this.goTo('gallery'),
+      goIndustry: ()=>this.goTo('industry'), goAbout: ()=>this.goTo('about'), goContact: ()=>this.goTo('contact'),
+      goCart: ()=>this.goTo('cart'), goCheckout: ()=>this.goTo('checkout'),
+      openCart: this.openCart, closeCart: this.closeCart,
+      filteredProducts, categoryTabs, featuredProducts,
+      selectedProduct, relatedProducts, sizePills,
+      qty: s.qty, incQty: this.incQty, decQty: this.decQty,
+      addSelectedToCart: () => this.addToCart(selectedProduct.id, s.selectedSize, s.qty),
+      contactName: s.contactName, contactEmail: s.contactEmail, contactMessage: s.contactMessage, contactSubmitted: s.contactSubmitted,
+      setContactName: (e)=>this.setContactField('contactName', e.target.value),
+      setContactEmail: (e)=>this.setContactField('contactEmail', e.target.value),
+      setContactMessage: (e)=>this.setContactField('contactMessage', e.target.value),
+      submitContact: this.submitContact,
+      orderPlaced: s.orderPlaced, placeOrder: this.placeOrder, startNewOrder: this.startNewOrder,
+      year: new Date().getFullYear(),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
