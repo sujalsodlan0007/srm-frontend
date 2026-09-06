@@ -21,7 +21,9 @@ export interface InquiryData {
   additionalDetails?: string;
 }
 
-const rawBaseUrl = (import.meta as ImportMeta & { env?: { VITE_API_URL?: string } }).env?.VITE_API_URL || 'https://backend.srmglobalhub.com';
+const isLocalHost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const defaultUrl = isLocalHost ? 'http://localhost:5000' : 'https://backend.srmglobalhub.com';
+const rawBaseUrl = (import.meta as ImportMeta & { env?: { VITE_API_URL?: string } }).env?.VITE_API_URL || defaultUrl;
 const API_BASE_URL = rawBaseUrl.replace(/\/+$/, '');
 
 const api = axios.create({
