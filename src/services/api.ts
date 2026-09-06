@@ -21,7 +21,8 @@ export interface InquiryData {
   additionalDetails?: string;
 }
 
-const API_BASE_URL = (import.meta as ImportMeta & { env?: { VITE_API_URL?: string } }).env?.VITE_API_URL || 'http://localhost:5000';
+const rawBaseUrl = (import.meta as ImportMeta & { env?: { VITE_API_URL?: string } }).env?.VITE_API_URL || 'https://backend.srmglobalhub.com';
+const API_BASE_URL = rawBaseUrl.replace(/\/+$/, '');
 
 const api = axios.create({
   baseURL: API_BASE_URL,
